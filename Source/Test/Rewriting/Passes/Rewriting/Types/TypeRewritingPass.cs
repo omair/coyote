@@ -80,6 +80,10 @@ namespace Microsoft.Coyote.Rewriting
 
             // Populate the map with the known synchronization types.
             this.KnownTypes[NameCache.Monitor] = typeof(Types.Threading.Monitor);
+#if NET9_0_OR_GREATER
+            this.KnownTypes[NameCache.Lock] = typeof(Types.Threading.Lock);
+            this.KnownTypes[NameCache.LockScope] = typeof(Types.Threading.Lock.Scope);
+#endif
             this.KnownTypes[NameCache.SemaphoreSlim] = typeof(Types.Threading.SemaphoreSlim);
             this.KnownTypes[NameCache.Interlocked] = typeof(Types.Threading.Interlocked);
             this.KnownTypes[NameCache.Volatile] = typeof(Types.Threading.Volatile);

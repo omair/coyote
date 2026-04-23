@@ -1,5 +1,10 @@
 ## vNext
 - Added support for the `net10.0` target framework.
+- Added controlled interception of `System.Threading.Lock` (introduced in .NET 9)
+  so that `Enter`/`Exit`/`EnterScope` acquire and release operations are visible
+  to the scheduler during systematic testing. Use `lockObj.EnterScope()` with a
+  `using` block to exercise this under C# 10; C# 13's `lock (lockObj)` statement
+  syntax is not yet supported.
 - Upgraded the `System.Text.Json` package to `v8.0.4` for the `netstandard2.0`
   target framework, due to a vulnerability.
 - Dropped support for the `netcoreapp3.1` target framework, which reached end of

@@ -71,6 +71,10 @@ namespace Microsoft.Coyote.Rewriting.Types
         internal static string Thread { get; } = typeof(SystemThreading.Thread).FullName;
 
         internal static string Monitor { get; } = typeof(SystemThreading.Monitor).FullName;
+#if NET9_0_OR_GREATER
+        internal static string Lock { get; } = typeof(SystemThreading.Lock).FullName;
+        internal static string LockScope { get; } = typeof(SystemThreading.Lock).FullName + "/Scope";
+#endif
         internal static string SemaphoreSlim { get; } = typeof(SystemThreading.SemaphoreSlim).FullName;
         internal static string Interlocked { get; } = typeof(SystemThreading.Interlocked).FullName;
         internal static string Volatile { get; } = typeof(SystemThreading.Volatile).FullName;
