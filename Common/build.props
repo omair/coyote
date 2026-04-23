@@ -16,10 +16,10 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/../bin/nuget</PackageOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net6.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0' or '$(TargetFramework)' == 'net8.0' or '$(TargetFramework)' == 'net6.0'">
     <LangVersion>10.0</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' != 'net8.0' and '$(TargetFramework)' != 'net6.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' != 'net10.0' and '$(TargetFramework)' != 'net8.0' and '$(TargetFramework)' != 'net6.0'">
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -44,9 +44,14 @@
     <Net6Installed>false</Net6Installed>
     <Net6Installed Condition="$(GlobalVersion.StartsWith('6.0'))">true</Net6Installed>
     <Net6Installed Condition="'$(BUILD_NET6)'=='yes'">true</Net6Installed>
+    <Net10Supported Condition="'$(Net10Supported)'==''">true</Net10Supported>
+    <Net10Installed>false</Net10Installed>
+    <Net10Installed Condition="$(GlobalVersion.StartsWith('10.0'))">true</Net10Installed>
+    <Net10Installed Condition="'$(BUILD_NET10)'=='yes'">true</Net10Installed>
     <TargetFrameworks>net8.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(NetStandard2Supported)'">$(TargetFrameworks);netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(Net6Installed)' and '$(Net6Supported)'">$(TargetFrameworks);net6.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(Net10Installed)' and '$(Net10Supported)'">$(TargetFrameworks);net10.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(OS)'=='Windows_NT'">
     <TargetFrameworks Condition="'$(Framework462Installed)' and '$(Framework462Supported)'">$(TargetFrameworks);net462</TargetFrameworks>
