@@ -2,9 +2,14 @@
 - Added support for the `net10.0` target framework.
 - Added controlled interception of `System.Threading.Lock` (introduced in .NET 9)
   so that `Enter`/`Exit`/`EnterScope` acquire and release operations are visible
-  to the scheduler during systematic testing. Use `lockObj.EnterScope()` with a
-  `using` block to exercise this under C# 10; C# 13's `lock (lockObj)` statement
-  syntax is not yet supported.
+  to the scheduler during systematic testing. Both the explicit
+  `lockObj.EnterScope()` form and C# 13's `lock (lockObj)` statement syntax are
+  supported.
+- Raised the `LangVersion` to `13.0` for the `net10.0` target framework and
+  added `params ReadOnlySpan<Task>` overloads to the Coyote `Task` shim for
+  `WhenAll`, `WhenAny`, `WaitAll`, and `WaitAny`. The C# 13 compiler prefers
+  these new overloads over the `params Task[]` variants, and without them test
+  code targeting `net10.0` would route through uncontrolled code paths.
 - Upgraded the `System.Text.Json` package to `v8.0.4` for the `netstandard2.0`
   target framework, due to a vulnerability.
 - Dropped support for the `netcoreapp3.1` target framework, which reached end of

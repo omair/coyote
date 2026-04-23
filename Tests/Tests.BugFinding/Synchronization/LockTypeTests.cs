@@ -24,7 +24,7 @@ namespace Microsoft.Coyote.BugFinding.Tests
             {
                 int value = 0;
                 Lock sync = new Lock();
-                using (sync.EnterScope())
+                lock (sync)
                 {
                     value++;
                 }
@@ -43,9 +43,9 @@ namespace Microsoft.Coyote.BugFinding.Tests
 
                 Task t1 = Task.Run(() =>
                 {
-                    using (a.EnterScope())
+                    lock (a)
                     {
-                        using (b.EnterScope())
+                        lock (b)
                         {
                         }
                     }
@@ -53,9 +53,9 @@ namespace Microsoft.Coyote.BugFinding.Tests
 
                 Task t2 = Task.Run(() =>
                 {
-                    using (b.EnterScope())
+                    lock (b)
                     {
-                        using (a.EnterScope())
+                        lock (a)
                         {
                         }
                     }
