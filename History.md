@@ -10,6 +10,11 @@
   `WhenAll`, `WhenAny`, `WaitAll`, and `WaitAny`. The C# 13 compiler prefers
   these new overloads over the `params Task[]` variants, and without them test
   code targeting `net10.0` would route through uncontrolled code paths.
+- Known gaps on `net10.0`: `Task.WhenEach` is not yet intercepted — user code
+  iterating its result with `await foreach` may produce confusing deadlock
+  diagnostics during testing. Workaround: loop on `Task.WhenAny` in user code
+  until native support lands. Also not yet shimmed: net9+ `Interlocked`
+  `Int128`/`UInt128` overloads and `ConcurrentDictionary.GetAlternateLookup`.
 - Upgraded the `System.Text.Json` package to `v8.0.4` for the `netstandard2.0`
   target framework, due to a vulnerability.
 - Dropped support for the `netcoreapp3.1` target framework, which reached end of
