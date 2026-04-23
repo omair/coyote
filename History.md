@@ -10,11 +10,33 @@
   `WhenAll`, `WhenAny`, `WaitAll`, and `WaitAny`. The C# 13 compiler prefers
   these new overloads over the `params Task[]` variants, and without them test
   code targeting `net10.0` would route through uncontrolled code paths.
-- Known gaps on `net10.0`: `Task.WhenEach` is not yet intercepted — user code
-  iterating its result with `await foreach` may produce confusing deadlock
-  diagnostics during testing. Workaround: loop on `Task.WhenAny` in user code
-  until native support lands. Also not yet shimmed: net9+ `Interlocked`
-  `Int128`/`UInt128` overloads and `ConcurrentDictionary.GetAlternateLookup`.
+- Added controlled interception for the net9+ `Interlocked.Exchange` and
+  `Interlocked.CompareExchange` overloads that atomically operate on `byte`,
+  `sbyte`, `short`, and `ushort` references.
+- Coverage notes for net9/10 BCL additions relevant to concurrent testing:
+  - **Supported**: `System.Threading.Lock` (type, `lock`-statement codegen,
+    `EnterScope`); `Task.WhenAll`/`WhenAny`/`WaitAll`/`WaitAny` with
+    `params ReadOnlySpan<Task>`; `Interlocked.Exchange`/`CompareExchange` for
+    `byte`/`sbyte`/`short`/`ushort`.
+  - **Documented gap — architectural seam**: `Task.WhenEach` (returns
+    `IAsyncEnumerable<Task>`; compiler-generated library-side state machine
+    creates a dependency-graph break for Coyote's scheduler).
+    `Dictionary<TKey,TValue>.GetAlternateLookup`,
+    `HashSet<T>.GetAlternateLookup`, and
+    `ConcurrentDictionary<TKey,TValue>.GetAlternateLookup` (return a ref
+    struct over an allocation-free span-based lookup — requires ref-struct
+    shim surface the rewriter does not currently model).
+  - **Documented gap — relaxed generic constraint**: `Interlocked.Exchange<T>`
+    and `Interlocked.CompareExchange<T>` in .NET 9 dropped the `where T : class`
+    constraint. Coyote's shims still carry the pre-net9 constraint, so user
+    code that calls these generics with `struct` or primitive type arguments
+    routes to the uncontrolled BCL method. Workaround: use the non-generic
+    typed overloads for value types.
+  - **Out of scope for Coyote**: `System.Threading.Channels` additions
+    (`CreateUnboundedPrioritized`), `OrderedDictionary<TKey,TValue>`,
+    `ReadOnlySet<T>`, `PriorityQueue.Remove` — none of these are concurrent
+    primitives, and `Channels` has never been part of Coyote's shim surface.
+  - No concurrency-relevant additions in .NET 10 require separate shim work.
 - Upgraded the `System.Text.Json` package to `v8.0.4` for the `netstandard2.0`
   target framework, due to a vulnerability.
 - Dropped support for the `netcoreapp3.1` target framework, which reached end of

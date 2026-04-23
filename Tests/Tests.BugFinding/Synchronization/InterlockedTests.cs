@@ -553,5 +553,56 @@ namespace Microsoft.Coyote.BugFinding.Tests
             }, configuration: this.GetConfiguration().WithTestingIterations(10)
                 .WithAtomicOperationRaceCheckingEnabled(true));
         }
+
+#if NET9_0_OR_GREATER
+        [Fact(Timeout = 5000)]
+        public void TestInterlockedExchangeByte()
+        {
+            this.Test(() =>
+            {
+                byte b = 1;
+                Assert.Equal((byte)1, Interlocked.Exchange(ref b, 42));
+                Assert.Equal((byte)42, b);
+
+                sbyte sb = -1;
+                Assert.Equal((sbyte)-1, Interlocked.Exchange(ref sb, 42));
+                Assert.Equal((sbyte)42, sb);
+
+                short s = 1;
+                Assert.Equal((short)1, Interlocked.Exchange(ref s, 42));
+                Assert.Equal((short)42, s);
+
+                ushort us = 1;
+                Assert.Equal((ushort)1, Interlocked.Exchange(ref us, 42));
+                Assert.Equal((ushort)42, us);
+            }, configuration: this.GetConfiguration().WithAtomicOperationRaceCheckingEnabled(true));
+        }
+
+        [Fact(Timeout = 5000)]
+        public void TestInterlockedCompareExchangeByte()
+        {
+            this.Test(() =>
+            {
+                byte b = 1;
+                Assert.Equal((byte)1, Interlocked.CompareExchange(ref b, 42, 1));
+                Assert.Equal((byte)42, b);
+                // Mismatched comparand: no swap.
+                Assert.Equal((byte)42, Interlocked.CompareExchange(ref b, 99, 1));
+                Assert.Equal((byte)42, b);
+
+                sbyte sb = -1;
+                Assert.Equal((sbyte)-1, Interlocked.CompareExchange(ref sb, 42, -1));
+                Assert.Equal((sbyte)42, sb);
+
+                short s = 1;
+                Assert.Equal((short)1, Interlocked.CompareExchange(ref s, 42, 1));
+                Assert.Equal((short)42, s);
+
+                ushort us = 1;
+                Assert.Equal((ushort)1, Interlocked.CompareExchange(ref us, 42, 1));
+                Assert.Equal((ushort)42, us);
+            }, configuration: this.GetConfiguration().WithAtomicOperationRaceCheckingEnabled(true));
+        }
+#endif
     }
 }

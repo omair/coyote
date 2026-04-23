@@ -253,6 +253,48 @@ namespace Microsoft.Coyote.Rewriting.Types.Threading
         }
 #endif
 
+#if NET9_0_OR_GREATER
+        /// <summary>
+        /// Sets an 8-bit unsigned integer to a specified value and returns the original value,
+        /// as an atomic operation.
+        /// </summary>
+        public static byte Exchange(ref byte location1, byte value)
+        {
+            ExploreInterleaving();
+            return SystemInterlocked.Exchange(ref location1, value);
+        }
+
+        /// <summary>
+        /// Sets an 8-bit signed integer to a specified value and returns the original value,
+        /// as an atomic operation.
+        /// </summary>
+        public static sbyte Exchange(ref sbyte location1, sbyte value)
+        {
+            ExploreInterleaving();
+            return SystemInterlocked.Exchange(ref location1, value);
+        }
+
+        /// <summary>
+        /// Sets a 16-bit signed integer to a specified value and returns the original value,
+        /// as an atomic operation.
+        /// </summary>
+        public static short Exchange(ref short location1, short value)
+        {
+            ExploreInterleaving();
+            return SystemInterlocked.Exchange(ref location1, value);
+        }
+
+        /// <summary>
+        /// Sets a 16-bit unsigned integer to a specified value and returns the original value,
+        /// as an atomic operation.
+        /// </summary>
+        public static ushort Exchange(ref ushort location1, ushort value)
+        {
+            ExploreInterleaving();
+            return SystemInterlocked.Exchange(ref location1, value);
+        }
+#endif
+
         /// <summary>
         /// Compares two 32-bit signed integers for equality and, if they are equal, replaces
         /// the first value.
@@ -352,6 +394,44 @@ namespace Microsoft.Coyote.Rewriting.Types.Threading
         /// are equal, replaces the first one.
         /// </summary>
         public static UIntPtr CompareExchange(ref UIntPtr location1, UIntPtr value, UIntPtr comparand)
+        {
+            ExploreInterleaving();
+            return SystemInterlocked.CompareExchange(ref location1, value, comparand);
+        }
+#endif
+
+#if NET9_0_OR_GREATER
+        /// <summary>
+        /// Compares two 8-bit unsigned integers for equality and, if they are equal, replaces the first value.
+        /// </summary>
+        public static byte CompareExchange(ref byte location1, byte value, byte comparand)
+        {
+            ExploreInterleaving();
+            return SystemInterlocked.CompareExchange(ref location1, value, comparand);
+        }
+
+        /// <summary>
+        /// Compares two 8-bit signed integers for equality and, if they are equal, replaces the first value.
+        /// </summary>
+        public static sbyte CompareExchange(ref sbyte location1, sbyte value, sbyte comparand)
+        {
+            ExploreInterleaving();
+            return SystemInterlocked.CompareExchange(ref location1, value, comparand);
+        }
+
+        /// <summary>
+        /// Compares two 16-bit signed integers for equality and, if they are equal, replaces the first value.
+        /// </summary>
+        public static short CompareExchange(ref short location1, short value, short comparand)
+        {
+            ExploreInterleaving();
+            return SystemInterlocked.CompareExchange(ref location1, value, comparand);
+        }
+
+        /// <summary>
+        /// Compares two 16-bit unsigned integers for equality and, if they are equal, replaces the first value.
+        /// </summary>
+        public static ushort CompareExchange(ref ushort location1, ushort value, ushort comparand)
         {
             ExploreInterleaving();
             return SystemInterlocked.CompareExchange(ref location1, value, comparand);
