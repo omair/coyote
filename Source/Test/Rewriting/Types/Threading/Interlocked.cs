@@ -224,6 +224,13 @@ namespace Microsoft.Coyote.Rewriting.Types.Threading
         /// Sets a variable of the specified type T to a specified value and returns the
         /// original value, as an atomic operation.
         /// </summary>
+        /// <remarks>
+        /// On .NET 9+ the BCL dropped the <c>where T : class</c> constraint on this method, but
+        /// the Coyote shim retains it. Callers targeting net9+ with a value-type <c>T</c> will
+        /// bypass this shim and invoke the BCL directly, so their atomic swap will not be seen
+        /// by the scheduler. For value types, prefer the non-generic typed overloads (such as
+        /// <see cref="Exchange(ref int, int)"/>) to keep the operation controlled.
+        /// </remarks>
         public static T Exchange<T>(ref T location1, T value)
             where T : class
         {
@@ -371,6 +378,14 @@ namespace Microsoft.Coyote.Rewriting.Types.Threading
         /// Compares two instances of the specified reference type T for reference equality
         /// and, if they are equal, replaces the first one.
         /// </summary>
+        /// <remarks>
+        /// On .NET 9+ the BCL dropped the <c>where T : class</c> constraint on this method, but
+        /// the Coyote shim retains it. Callers targeting net9+ with a value-type <c>T</c> will
+        /// bypass this shim and invoke the BCL directly, so their atomic compare-and-swap will
+        /// not be seen by the scheduler. For value types, prefer the non-generic typed overloads
+        /// (such as <see cref="CompareExchange(ref int, int, int)"/>) to keep the operation
+        /// controlled.
+        /// </remarks>
         public static T CompareExchange<T>(ref T location1, T value, T comparand)
             where T : class
         {

@@ -431,28 +431,24 @@ namespace Microsoft.Coyote.Rewriting.Types.Threading.Tasks
             return SystemTask.WaitAll(tasks, millisecondsTimeout, cancellationToken);
         }
 
+#if NET9_0_OR_GREATER
+        /// <summary>
+        /// Waits for all of the provided task objects in the specified span to complete execution.
+        /// Materializes to an array because the underlying array overload threads through
+        /// <see cref="TaskServices.WaitUntilAllTasksComplete"/>, which is load-bearing for
+        /// controlled scheduling.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void WaitAll(params ReadOnlySpan<SystemTask> tasks) =>
+            WaitAll(tasks.ToArray());
+#endif
+
         /// <summary>
         /// Waits for any of the provided task objects to complete execution.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int WaitAny(params SystemTask[] tasks) =>
             WaitAny(tasks, SystemTimeout.Infinite, default);
-
-#if NET9_0_OR_GREATER
-        /// <summary>
-        /// Waits for all of the provided task objects in the specified span to complete execution.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WaitAll(params ReadOnlySpan<SystemTask> tasks) =>
-            WaitAll(tasks.ToArray());
-
-        /// <summary>
-        /// Waits for any of the provided task objects in the specified span to complete execution.
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int WaitAny(params ReadOnlySpan<SystemTask> tasks) =>
-            WaitAny(tasks.ToArray());
-#endif
 
         /// <summary>
         /// Waits for any of the provided task objects to complete execution within a specified time interval.
@@ -499,6 +495,18 @@ namespace Microsoft.Coyote.Rewriting.Types.Threading.Tasks
 
             return SystemTask.WaitAny(tasks, millisecondsTimeout, cancellationToken);
         }
+
+#if NET9_0_OR_GREATER
+        /// <summary>
+        /// Waits for any of the provided task objects in the specified span to complete execution.
+        /// Materializes to an array because the underlying array overload threads through
+        /// <see cref="TaskServices.WaitUntilAnyTaskCompletes"/>, which is load-bearing for
+        /// controlled scheduling.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int WaitAny(params ReadOnlySpan<SystemTask> tasks) =>
+            WaitAny(tasks.ToArray());
+#endif
 
         /// <summary>
         /// Waits for the specified task to complete execution.

@@ -1,10 +1,10 @@
 ## vNext
 - Added support for the `net10.0` target framework.
 - Added controlled interception of `System.Threading.Lock` (introduced in .NET 9)
-  so that `Enter`/`Exit`/`EnterScope` acquire and release operations are visible
-  to the scheduler during systematic testing. Both the explicit
-  `lockObj.EnterScope()` form and C# 13's `lock (lockObj)` statement syntax are
-  supported.
+  so that `Enter`, `Exit`, `TryEnter` (all overloads), `EnterScope`, and the
+  `IsHeldByCurrentThread` property are visible to the scheduler during
+  systematic testing. Both the explicit `lockObj.EnterScope()` form and C# 13's
+  `lock (lockObj)` statement syntax are supported.
 - Raised the `LangVersion` to `13.0` for the `net10.0` target framework and
   added `params ReadOnlySpan<Task>` overloads to the Coyote `Task` shim for
   `WhenAll`, `WhenAny`, `WaitAll`, and `WaitAny`. The C# 13 compiler prefers
@@ -15,7 +15,8 @@
   `sbyte`, `short`, and `ushort` references.
 - Coverage notes for net9/10 BCL additions relevant to concurrent testing:
   - **Supported**: `System.Threading.Lock` (type, `lock`-statement codegen,
-    `EnterScope`); `Task.WhenAll`/`WhenAny`/`WaitAll`/`WaitAny` with
+    `EnterScope`, `Enter`, `Exit`, `TryEnter` (all overloads),
+    `IsHeldByCurrentThread`); `Task.WhenAll`/`WhenAny`/`WaitAll`/`WaitAny` with
     `params ReadOnlySpan<Task>`; `Interlocked.Exchange`/`CompareExchange` for
     `byte`/`sbyte`/`short`/`ushort`.
   - **Documented gap — architectural seam**: `Task.WhenEach` (returns

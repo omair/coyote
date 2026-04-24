@@ -16,6 +16,13 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/../bin/nuget</PackageOutputPath>
   </PropertyGroup>
+  <!--
+    LangVersion is pinned per target. net10.0 needs C# 13 for the new `lock (Lock)`
+    statement codegen against System.Threading.Lock (introduced in net9). net8/net6
+    stay at C# 10. The negative exclusion pins netstandard2.0/net462 at C# 8 because
+    those targets lack the runtime shape newer language features require.
+    Adding a new TFM: update BOTH the positive block AND the exclusion list below.
+  -->
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <LangVersion>13.0</LangVersion>
   </PropertyGroup>

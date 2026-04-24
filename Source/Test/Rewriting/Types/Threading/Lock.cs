@@ -72,6 +72,90 @@ namespace Microsoft.Coyote.Rewriting.Types.Threading
         }
 
         /// <summary>
+        /// Attempts to acquire the lock without blocking. Returns true if the lock was taken.
+        /// </summary>
+        public bool TryEnter()
+        {
+            var runtime = CoyoteRuntime.Current;
+            if (runtime.SchedulingPolicy is SchedulingPolicy.Interleaving)
+            {
+                return SynchronizedBlock.Lock(this).IsLockTaken;
+            }
+
+            if (runtime.SchedulingPolicy is SchedulingPolicy.Fuzzing &&
+                runtime.TryGetExecutingOperation(out ControlledOperation current))
+            {
+                runtime.DelayOperation(current);
+            }
+
+            return this.Instance.TryEnter();
+        }
+
+        /// <summary>
+        /// Attempts to acquire the lock, blocking until the timeout elapses. Returns true if the
+        /// lock was taken. During systematic testing the timeout is not currently modeled, matching
+        /// the <c>Monitor.TryEnter</c> shim behavior.
+        /// </summary>
+        public bool TryEnter(int millisecondsTimeout)
+        {
+            var runtime = CoyoteRuntime.Current;
+            if (runtime.SchedulingPolicy is SchedulingPolicy.Interleaving)
+            {
+                // TODO: model the timeout during interleaving exploration.
+                return SynchronizedBlock.Lock(this).IsLockTaken;
+            }
+
+            if (runtime.SchedulingPolicy is SchedulingPolicy.Fuzzing &&
+                runtime.TryGetExecutingOperation(out ControlledOperation current))
+            {
+                runtime.DelayOperation(current);
+            }
+
+            return this.Instance.TryEnter(millisecondsTimeout);
+        }
+
+        /// <summary>
+        /// Attempts to acquire the lock, blocking until the timeout elapses. Returns true if the
+        /// lock was taken. During systematic testing the timeout is not currently modeled.
+        /// </summary>
+        public bool TryEnter(TimeSpan timeout)
+        {
+            var runtime = CoyoteRuntime.Current;
+            if (runtime.SchedulingPolicy is SchedulingPolicy.Interleaving)
+            {
+                // TODO: model the timeout during interleaving exploration.
+                return SynchronizedBlock.Lock(this).IsLockTaken;
+            }
+
+            if (runtime.SchedulingPolicy is SchedulingPolicy.Fuzzing &&
+                runtime.TryGetExecutingOperation(out ControlledOperation current))
+            {
+                runtime.DelayOperation(current);
+            }
+
+            return this.Instance.TryEnter(timeout);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the lock is held by the calling operation. Returns
+        /// false when the lock has not been acquired, matching the BCL contract.
+        /// </summary>
+        public bool IsHeldByCurrentThread
+        {
+            get
+            {
+                var runtime = CoyoteRuntime.Current;
+                if (runtime.SchedulingPolicy is SchedulingPolicy.Interleaving)
+                {
+                    var block = SynchronizedBlock.Find(this);
+                    return block?.IsEntered() ?? false;
+                }
+
+                return this.Instance.IsHeldByCurrentThread;
+            }
+        }
+
+        /// <summary>
         /// Enters the lock and returns a <see cref="Scope"/> that releases the lock when disposed.
         /// This is what the C# compiler emits for <c>lock (lockObj)</c> when the variable is
         /// typed as <see cref="SystemThreading.Lock"/>.
@@ -89,6 +173,10 @@ namespace Microsoft.Coyote.Rewriting.Types.Threading
         {
             private readonly Lock Owner;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="Scope"/> struct bound to the
+            /// specified owning <see cref="Lock"/>.
+            /// </summary>
             internal Scope(Lock owner)
             {
                 this.Owner = owner;
